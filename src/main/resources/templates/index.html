@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+	<title>首页</title>
+	<script th:src="@{/js/jquery-3.4.1.min.js}"></script>
+	<script th:src="@{/js/Base64.js}"></script>
+	
+</head>
+<body>
+	<!-- 菜单栏 -->
+	<div class="main-menu">
+		<button class="show-instance" onclick="demo.start()">请假</button>
+		<button class="show-img" onclick="demo.commit()">审批</button>
+		<button class="show-img" onclick="demo.back()">驳回</button>
+		<button class="show-task" onclick="demo.showTask()">查看流程图</button>
+	</div>
+	<br/>
+		流程实例ID:<input type="text" name="instanceId"/>
+	<br/>
+	<div class="main-body">
+		
+	</div>	
+	<br/>
+	<!-- 结果栏 -->
+	<div class="result-div">
+	</div>
+	<script type="text/javascript">
+		 function make_base_auth(user, password) {
+			 var vv = new Base64();
+	         var tok = user + ':' + password;
+	         var hash = vv.encode(tok);
+	         console.log("Basic " + hash)
+	         return "Basic " + hash;
+	     }
+		 var auth = make_base_auth('tianfeng', 'tianfeng');
+		var demo = {
+			start:function() {
+				$.ajax({
+					async : false,
+					cache : false,
+					type : 'POST',
+					url : 'demo/start',
+					dataType : "json",
+					headers: {'Authorization':auth},
+					error : function() {
+						alert('请求失败');
+					},
+					success : function(data) {
+						$("input[name='instanceId']").val(data);
+					}
+				});
+			},
+			commit:function() {
+				var instanceId = $("input[name='instanceId']").val();
+				if(instanceId == "") {
+					alert("暂无流程！");
+					return;
+				}
+				$.ajax({
+					async : false,
+					cache : false,
+					type : 'POST',
+					url : 'demo/commit?processId='+instanceId,
+					dataType : "json",
+					error : function() {
+						alert('请求失败');
+					},
+					success : function(data) {
+						alert('请求成功');
+					}
+				});
+			},
+			back:function() {
+				var instanceId = $("input[name='instanceId']").val();
+				if(instanceId == "") {
+					alert("暂无流程！");
+					return;
+				}
+				$.ajax({
+					async : false,
+					cache : false,
+					type : 'POST',
+					url : 'demo/back?processId='+instanceId,
+					dataType : "json",
+					error : function() {
+						alert('请求失败');
+					},
+					success : function(data) {
+						alert('请求成功');
+					}
+				});
+			},
+			showTask:function() {
+				var instanceId = $("input[name='instanceId']").val();
+				if(instanceId == "") {
+					alert("暂无流程！");
+					return;
+				}
+				var imgHtml = '<embed src="/demo/showImg?instanceId=' + instanceId + '" style="display:block;width:1000px;height:450px" />';
+				$(".result-div").html(imgHtml);
+			}
+		}
+	</script>
+</body>
+</html>
